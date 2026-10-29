@@ -1,0 +1,43 @@
+name: CI - Analyse Gemini, tests et rapport PDF
+
+on:
+  push:                     # à chaque modification enregistrée
+  workflow_dispatch:        # et avec le bouton « Run workflow » de l'onglet Actions
+
+jobs:
+  analyse-et-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Installer les dépendances
+        run: pip install -r requirements.txt
+
+      - name: Analyse IA avec Gemini
+        env:
+          GOOGLE_AI_KEY: ${{ secrets.GOOGLE_AI_KEY }}
+        run: python analyse.py
+
+      - name: Exécuter les tests
+        run: pytest test_mycode.py -v --json-report --json-report-file=test_results.json
+
+      - name: Générer le rapport PDF
+        if: always()
+        run: python generate_pdf_report.py
+
+      - name: Archiver les résultats
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: resultats-ci
+          path: |
+            test_report.pdf
+            analyse_result.txt
+          retention-days: 30
