@@ -34,7 +34,8 @@ class TestFactorielle:
     def test_negatif_leve_valueerror(self):
         # ✍️ EXERCICE 2 : remplace la ligne ci-dessous par un test qui vérifie que
         # factorielle(-1) lève une ValueError (modèle : test_division_par_zero_leve_valueerror)
-        pytest.fail("Test à écrire")
+        with pytest.raises(ValueError): 
+            factorielle(-1) 
 
     def test_flottant_leve_valueerror(self):
         with pytest.raises(ValueError):
